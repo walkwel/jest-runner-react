@@ -18,6 +18,7 @@ body {
 
 .super {
   width: calc(100% - 13px);
+  min-height: calc(100vh - 150px);
   margin: 0 auto;
   background: #252a31;
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
@@ -169,7 +170,11 @@ body {
   font-size: 3em;
 }
 
-#title h3 {
+.title{
+  display: flex;
+  justify-content: space-between;
+}
+.title h3 {
   font-family: "Gentium Book Basic";
   font-weight: 900;
   color: #fff;
@@ -240,7 +245,6 @@ body {
   font-family: "Gentium Book Basic";
   box-shadow: 4px 4px 0px rgba(0, 0, 0, .1);
   color: #111;
-  min-width: 300px;
 }
 
 .pointer {
@@ -314,22 +318,21 @@ body {
   padding: 10px;
 }
 
-#githubForm {
+.githubForm {
   display: flex;
   height: 64px;
   flex-direction: row;
   padding: 0px;
-  min-width: 550px;
   transition: all 2s ease-in-out;
 }
 
-#githubForm input {
+.githubForm input {
   float: left;
   height: 100%;
   width: calc(100% - 80px);
 }
 
-#githubForm button {
+.githubForm button {
   float: left;
   width: 80px;
   margin-top: 0;
@@ -340,21 +343,24 @@ body {
 
 .notification {
   position: fixed;
-  top: 50px;
-  right: 50px;
-  padding: 20px;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 4px 4px 6px 1px rgba(18, 79, 142, 1);
-  z-index: 9999;
+  position: fixed;
+    top: 50px;
+    right: 50px;
+    padding: 20px;
+    background-color: rgb(123, 15, 133);
+    -webkit-box-shadow: 4px 4px 6px 1px rgba(18, 79, 142, 1);
+    box-shadow: 0px 0px 11px 6px rgb(255, 255, 255);
+    z-index: 9999;
+    color: white;
 }
 
-#result-div {
+.result-div {
   background-color: #353c46;
   margin: 10px 0px;
   font-family: monospace;
 }
 
-#result-div .log {
+.result-div .log {
   display: flex;
   color: white;
   font-size: 14px;
@@ -363,41 +369,41 @@ body {
   border-bottom: solid 1px #353c46;
 }
 
-#result-div .log-status {
+.result-div .log-status {
   width: 60px;
   text-align: center
 }
 
-#result-div .log-time {
+.result-div .log-time {
   width: 80px;
   text-align: center
 }
 
-#result-div .log .log-describe {
+.result-div .log .log-describe {
   width: 225px;
 }
 
-#result-div .log-expect {
+.result-div .log-expect {
   width: calc(100% - 365px);
 }
 
-#result-div .error {
+.result-div .error {
   color: red;
 }
 
-#result-div .success {
+.result-div .success {
   color: green;
 }
 
-#result-div .log-err {
+.result-div .log-err {
   border-bottom: solid 1px #353c46;
 }
 
-/* #result-div .log-err pre {
+/* .result-div .log-err pre {
   font-size: 12px !important;
 } */
 
-#result-div .console {
+.result-div .console {
   color: white;
   background-color: #0b0b0b;
   padding: 10px;
@@ -444,8 +450,38 @@ body {
   .wrap .status {
     font-size: 25px;
   }
-  #githubForm {
+  .githubForm {
     width: auto;
   }
 
+}
+
+.github-poster{
+  text-align: center ;
+  color: white ;
+  font-size: 227px ;
+  padding: 190px 0px;
+  height: calc(100vh - 136x);
+}
+
+.file-wrap{
+  display: flex;
+  justify-content: space-between;
+}
+.trash{
+  color: grey;
+}
+.trash:hover{
+  color: red;
+}
+
+.start-wrap{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100vh - 229px);
+}
+.start-wrap div{
+  text-align: center;
+   width: 100% 
 }

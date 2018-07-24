@@ -7,8 +7,7 @@ class GithubForm extends React.Component {
             githubURL: ''
         }
     }
-    handleKeyDown = (e) => {
-        console.log(e)
+    handleChange = (e) => {
         this.setState({ githubURL: e.target.value })
     }
     handleSubmit = (e) => {
@@ -17,9 +16,9 @@ class GithubForm extends React.Component {
     }
     render() {
         return (
-            <form onSubmit={this.handleSubmit} id="githubForm">
-                <input value={this.state.githubURL} onChange={this.handleKeyDown} placeholder="Enter github URL" type="text" className="file2" />
-                <button type='submit' className="bigBtn" id="github">
+            <form onSubmit={this.handleSubmit} className="githubForm">
+                <input value={this.state.githubURL} onChange={this.handleChange} placeholder="Enter github URL" type="text" className="file2" />
+                <button type='submit' className="bigBtn">
                     <i className="fab fa-github"></i>
                 </button>
             </form>

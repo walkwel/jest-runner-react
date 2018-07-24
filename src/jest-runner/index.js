@@ -6,25 +6,46 @@ import Editor from './components/Editor';
 import Loader from './components/Loader';
 import Notification from './components/Notification';
 
-const ENCODED_GITHUB_ACCESS_TOKEN = 'NDlmNDE5OWM0MGNmM2Q1OTA1NTEwOTM3OWFiMzhmOGExYjcwMTE2Yw==';
-const GITHUB_BASE_URL = 'https://github.com/';
-const GITHUB_SERVER_URL = 'https://api.github.com';
-const RAW_GIT_URL = 'https://raw.githubusercontent.com';
-const AWS_SERVER_URL = 'https://dgiy2j88ll.execute-api.us-east-1.amazonaws.com/dev/helloTest'
-const GITHUB_ACCESS_TOKEN = atob(ENCODED_GITHUB_ACCESS_TOKEN);
+import {
+    GITHUB_BASE_URL,
+    GITHUB_SERVER_URL,
+    RAW_GIT_URL,
+    AWS_SERVER_URL,
+    GITHUB_ACCESS_TOKEN,
+    TEACHER,
+    STUDENT,
+} from '../constants'
 
 class JestRunner extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
+            userRole: null,
             loading: false,
             output: null,
             notificationMsg: '',
             repoDetails: {},
             selectedFile: null,
             editorContent: '',
-            files: []
+            files: [],
+            project: null
         };
+    }
+    componentDidMount(){
+        this.setState({
+            userRole: this.props.userRole,
+            selectedFile: this.props.project.files && this.props.project.files.length > 0 ? this.props.project.files.find(f => f.type !== 'dir') : null,
+            files: this.props.project.files || [],
+            project: this.props.project
+        })
+    }
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            userRole: nextProps.userRole,
+            selectedFile: nextProps.project.files && nextProps.project.files.length > 0 ? nextProps.project.files.find(f => f.type !== 'dir') : null,
+            files: nextProps.project.files || [],
+            project: nextProps.project
+        })
     }
     setRepoDetails = (details = {}) => {
         this.setState({ repoDetails: details })
@@ -95,7 +116,6 @@ class JestRunner extends React.Component {
                 break;
             }
         }
-        console.log(folderToFetch);
         if (folderToFetch) {
             fetchDirectoryStructureFromGitub(`${GITHUB_SERVER_URL}/repos/${this.state.repoDetails.owner}/${this.state.repoDetails.name}/contents${folderToFetch.path}`)
                 .then(tree => {
@@ -156,7 +176,7 @@ class JestRunner extends React.Component {
     saveFile = (file, code) => {
         this.setState({ files: this.state.files.map(f => f.path == file.path ? { ...f, code } : f) })
     }
-    postFiles = () => {
+    runTests = () => {
         this.hideOutput();
         // this.saveFile();
         let body = {}
@@ -179,7 +199,7 @@ class JestRunner extends React.Component {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('server response', data, JSON.stringify(data));
+                console.log('server response', data);
                 if (data.message && data.message === 'Internal server error') {
                     // this.showOutput(data.message);
 
@@ -193,45 +213,101 @@ class JestRunner extends React.Component {
                 // this.showResult(err.message);
             })
     }
+    handleDeleteFile = (file) => {
+        const hasOkay = window.confirm(`Are you sure to delete <${file.path}>?`);
+        if (hasOkay) {
+            this.setState({
+                files: this.state.files.filter(f => f.path !== file.path)
+            })
+            if (this.state.selectedFile.path === file.path) {
+                this.setState({
+                    selectedFile: this.state.files.length > 0 ? this.state.files.find(f => f.type !== 'dir' && f.path !== file.path) : null
+                })
+            }
+        }
+    }
+    handelFileSubmit = (file) => {
+        const files = this.state.files;
+        const paths = file.path.split('/');
+        files.push({
+            path: file.path,
+            code: file.code || '',
+            name: paths.length > 0 ? paths[paths.length - 1] : '',
+            readOnly: false,
+            type: 'file'
+        });
+        this.setState({ files });
+    }
+    handleCheckbox = (file) => {
+        this.setState({
+            files: this.state.files.map(f => f.path === file.path ? { ...f, readOnly: !f.readOnly } : f),
+            selectedFile: { ...this.state.selectedFile, readOnly: !this.state.selectedFile.readOnly }
+        })
+    }
+    saveAllFiles = () => {
+        const projectJSON = window.localStorage.getItem('projects');
+        let projects = projectJSON ? JSON.parse(projectJSON) : [];
+        const existedProject = projects.find(p => p.timestamp === this.state.project.timestamp);
+        if (existedProject) {
+            projects = projects.map(p => p.timestamp === this.state.project.timestamp ? { ...this.state.project, files: this.state.files } : p)
+        } else {
+            projects.push({
+                timestamp: this.state.project.timestamp,
+                files: this.state.files
+            })
+        }
+
+        window.localStorage.setItem('projects', JSON.stringify(projects));
+        this.showNotification('Project Saved.');
+    }
     render() {
-        const { output, loading, notificationMsg, files, selectedFile, repoDetails } = this.state;
+        const { output, loading, notificationMsg, files, selectedFile, repoDetails, userRole } = this.state;
         return (
             <div>
-                <div className="super">
 
+                {userRole === TEACHER &&
                     <GithubForm handleSubmit={this.handelGithubURlSubmit} />
-                    <br />
+                }
+                <br />
+                {
+                    // // files.length == 0 &&
+                    // false &&
+                    // <div className="github-poster">
+                    //     <i className="fab fa-github"></i>
+                    // </div>
+                }
+
+                <div className="title">
+                    {/* {repoDetails.owner
+                        && <h3 style={{ color: '#b3b9bf', padding: '2px' }}>{
+                            `${repoDetails.owner}/${repoDetails.name}/`}{selectedFile && (<span style={{ color: 'white' }}>{selectedFile.path}</span>)
+                            } </h3>
+                    } */}
                     {
-                        files.length == 0 &&
-                        <div style={{
-                            textAlign: 'center',
-                            color: 'white',
-                            fontSize: '227px',
-                            padding: '190px',
-                            height: 'calc(100vh - 136x)'
-                        }}>
-                            <i class="fab fa-github"></i>
-                        </div>
+                        userRole === TEACHER
+                            ? <h3 style={{ color: '#b3b9bf', padding: '2px' }}><i className="fas fa-check-square"></i> Select Checkbox for read only file. </h3>
+                            : <h3 style={{ color: '#b3b9bf', padding: '2px' }}>Only <i className="fas fa-edit"></i> are editable.</h3>
                     }
-                    {repoDetails.owner && <div id="title">
-                        <h3 style={{ color: '#b3b9bf', padding: '2px' }}>{`${repoDetails.owner}/${repoDetails.name}/`}{selectedFile && (<span style={{ color: 'white' }}>{selectedFile.path}</span>)} </h3>
-                    </div>}
-
-                    {files.length > 0 &&
-                        <div className="mainWrap" id="editor-panel">
-
-                            <div className="container" id="container">
-                                <FileDirectory files={files} selectedFile={selectedFile} openFile={this.openFile} />
-                                <Editor selectedFile={selectedFile} saveFile={this.saveFile} />
-                            </div>
-
-                            <div style={{ height: '97px' }}>
-                                <button className="bigBtn" id="postButton" onClick={this.postFiles}>Run Tests</button>
-                            </div>
-
-                        </div>}
-                    {output && <Output output={output} />}
+                    <a className="pointer" onClick={this.props.exit}><h3><i className="fas fa-power-off"></i></h3></a>
                 </div>
+                <div className="mainWrap" >
+
+                    <div className="container" >
+                        <FileDirectory files={files} userRole={userRole} selectedFile={selectedFile} openFile={this.openFile} handleSubmit={this.handelFileSubmit} deleteFile={this.handleDeleteFile} handleCheckbox={this.handleCheckbox} />
+                        {<Editor selectedFile={selectedFile} saveFile={this.saveFile} />}
+                    </div>
+
+
+                    <div style={{ height: '97px' }}>
+                        {userRole === STUDENT
+                            ? <button className="bigBtn" onClick={this.runTests}>Run Tests</button>
+                            : <button className="bigBtn" onClick={this.saveAllFiles}>Save Files</button>
+                        }
+
+                    </div>
+
+                </div>
+                {output && <Output output={output} />}
                 {loading && <Loader />}
                 <Notification message={notificationMsg} />
             </div>)

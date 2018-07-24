@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import JestRunner from './jest-runner';
+import Start from './Start';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
-      <JestRunner />
+      <Start />
     );
   }
 }

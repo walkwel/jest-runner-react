@@ -33,8 +33,7 @@ class Editor extends React.Component {
             const exts = nextProps.selectedFile.name.split('.');
             let ext = exts[exts.length - 1];
             ext = extensions[ext] ? extensions[ext] : ext;
-            console.log(ext)
-            this.setState({ code: nextProps.selectedFile.code, extension: ext });
+            this.setState({ code: nextProps.selectedFile.code, extension: ext, readOnly : nextProps.selectedFile.readOnly });
             setTimeout(() => {
                 const session = this.refs.AceEditor.editor.getSession();
                 const undoManager = session.getUndoManager();
@@ -58,6 +57,7 @@ class Editor extends React.Component {
                     editorProps={{ $blockScrolling: true }}
                     showPrintMargin={false}
                     onChange={(v) => { this.setState({ code: v }) }}
+                    readOnly={this.state.readOnly}
                 />
             </div>
         );

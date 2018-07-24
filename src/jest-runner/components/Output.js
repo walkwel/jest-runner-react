@@ -8,10 +8,10 @@ class Ouptut extends React.Component {
     render() {
         const { output } = this.props;
         return (
-            <div id="result-div">
+            <div className="result-div">
                 <div className="wrap p-10">
                     <h2>Test Result</h2>
-                    <div id="result-status" className="status">
+                    <div className="status">
                         <span className="error"> {output.numFailedTests} <i className="fas fa-times-circle"></i></span>
                         <span className="success"> {output.numPassedTests} <i className="fas fa-check-circle"></i></span>
                     </div>
@@ -56,13 +56,13 @@ class Ouptut extends React.Component {
                         {
                             output.testResults.map((r, rIndex) => {
                                 return (r.failureMessage && r.failureMessage.length > 0 &&
-                                    <pre key={rIndex + 1} className="console" id="result-text">{r.failureMessage}</pre>
+                                    <pre key={rIndex + 1} className="console">{r.failureMessage}</pre>
                                 )
                             })
                         }
                         {
                             output.success &&
-                            <pre className="console" id="result-text">All Test Passed.</pre>
+                            <pre className="console">All Test Passed.</pre>
 
                         }
                     </div>

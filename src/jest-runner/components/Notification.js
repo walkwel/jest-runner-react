@@ -11,7 +11,7 @@ class Notification extends React.Component {
         this.setState({ hide: !nextProps.message });
         setTimeout(() => {
             this.setState({ hide: true });
-        }, 3000)
+        }, 5000)
     }
     render() {
         return this.state.hide ? '' :
